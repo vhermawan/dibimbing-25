@@ -1,0 +1,185 @@
+{
+  "info": {
+    "name": "Products API - CRUD Operations",
+    "description": "Complete CRUD API for Products management with Prisma and Next.js",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "productId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Get All Products",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/products",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "products"]
+        },
+        "description": "Retrieves all active products (excludes soft-deleted ones)"
+      },
+      "response": []
+    },
+    {
+      "name": "Get Single Product",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/products/{{productId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "products", "{{productId}}"]
+        },
+        "description": "Retrieves a single product by ID"
+      },
+      "response": []
+    },
+    {
+      "name": "Create Product",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// Save product ID for other requests",
+              "if (pm.response.code === 201) {",
+              "    const response = pm.response.json();",
+              "    if (response.success && response.data) {",
+              "        pm.collectionVariables.set('productId', response.data.id);",
+              "        console.log('Product ID saved:', response.data.id);",
+              "    }",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Sample Product\",\n  \"description\": \"This is a sample product created via Postman\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/products",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "products"]
+        },
+        "description": "Creates a new product. The product ID will be automatically saved to the collection variable."
+      },
+      "response": []
+    },
+    {
+      "name": "Update Product",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Updated Product Name\",\n  \"description\": \"Updated product description\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/products/{{productId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "products", "{{productId}}"]
+        },
+        "description": "Updates an existing product. You can update name, description, or both."
+      },
+      "response": []
+    },
+    {
+      "name": "Update Product (Partial)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Only Name Updated\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/products/{{productId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "products", "{{productId}}"]
+        },
+        "description": "Partially updates a product (only name in this example)"
+      },
+      "response": []
+    },
+    {
+      "name": "Soft Delete Product",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/products/{{productId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "products", "{{productId}}"]
+        },
+        "description": "Soft deletes a product (sets deletedAt timestamp). The product can be restored later."
+      },
+      "response": []
+    },
+    {
+      "name": "Hard Delete Product",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/products/{{productId}}?hard=true",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "products", "{{productId}}"],
+          "query": [
+            {
+              "key": "hard",
+              "value": "true",
+              "description": "Set to true for permanent deletion"
+            }
+          ]
+        },
+        "description": "Permanently deletes a product from the database. This action cannot be undone."
+      },
+      "response": []
+    },
+    {
+      "name": "Restore Product",
+      "request": {
+        "method": "PATCH",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/products/{{productId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "products", "{{productId}}"]
+        },
+        "description": "Restores a soft-deleted product by setting deletedAt to null"
+      },
+      "response": []
+    }
+  ]
+}

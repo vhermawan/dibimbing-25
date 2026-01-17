@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Products API Tester</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      padding: 30px;
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+      font-size: 28px;
+    }
+
+    .subtitle {
+      color: #666;
+      margin-bottom: 30px;
+      font-size: 14px;
+    }
+
+    .section {
+      margin-bottom: 30px;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      border-left: 4px solid #667eea;
+    }
+
+    h2 {
+      color: #333;
+      margin-bottom: 15px;
+      font-size: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      color: #555;
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid #ddd;
+      border-radius: 6px;
+      font-size: 14px;
+      transition: border-color 0.3s;
+    }
+
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    textarea {
+      min-height: 80px;
+      resize: vertical;
+      font-family: inherit;
+    }
+
+    button {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.3s;
+      margin-right: 10px;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background: #5568d3;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    button.secondary {
+      background: #6c757d;
+    }
+
+    button.secondary:hover {
+      background: #5a6268;
+    }
+
+    button.danger {
+      background: #dc3545;
+    }
+
+    button.danger:hover {
+      background: #c82333;
+    }
+
+    button.success {
+      background: #28a745;
+    }
+
+    button.success:hover {
+      background: #218838;
+    }
+
+    #response {
+      margin-top: 20px;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      border: 2px solid #ddd;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    #response h3 {
+      color: #333;
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+
+    pre {
+      background: #282c34;
+      color: #abb2bf;
+      padding: 15px;
+      border-radius: 6px;
+      overflow-x: auto;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .products-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 15px;
+      margin-top: 15px;
+    }
+
+    .product-card {
+      background: white;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 15px;
+      transition: all 0.3s;
+    }
+
+    .product-card:hover {
+      border-color: #667eea;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .product-card h4 {
+      color: #333;
+      margin-bottom: 8px;
+      font-size: 16px;
+    }
+
+    .product-card p {
+      color: #666;
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
+
+    .product-card small {
+      color: #999;
+      font-size: 11px;
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    .product-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .product-actions button {
+      padding: 6px 12px;
+      font-size: 12px;
+      margin: 0;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .status-badge.active {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .status-badge.deleted {
+      background: #f8d7da;
+      color: #721c24;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🚀 Products API Tester</h1>
+    <p class="subtitle">Test all CRUD operations for the Products API</p>
+
+    <!-- Get All Products -->
+    <div class="section">
+      <h2>📋 Get All Products</h2>
+      <button onclick="getAllProducts()">Get All Products</button>
+      <button class="secondary" onclick="refreshProducts()">Refresh List</button>
+      <div id="productsList"></div>
+    </div>
+
+    <!-- Get Single Product -->
+    <div class="section">
+      <h2>🔍 Get Single Product</h2>
+      <div class="form-group">
+        <label>Product ID:</label>
+        <input type="text" id="getProductId" placeholder="Enter product UUID">
+      </div>
+      <button onclick="getProduct()">Get Product</button>
+    </div>
+
+    <!-- Create Product -->
+    <div class="section">
+      <h2>➕ Create Product</h2>
+      <div class="form-group">
+        <label>Name:</label>
+        <input type="text" id="createName" placeholder="Product name">
+      </div>
+      <div class="form-group">
+        <label>Description:</label>
+        <textarea id="createDescription" placeholder="Product description"></textarea>
+      </div>
+      <button onclick="createProduct()">Create Product</button>
+    </div>
+
+    <!-- Update Product -->
+    <div class="section">
+      <h2>✏️ Update Product</h2>
+      <div class="form-group">
+        <label>Product ID:</label>
+        <input type="text" id="updateId" placeholder="Enter product UUID">
+      </div>
+      <div class="form-group">
+        <label>Name:</label>
+        <input type="text" id="updateName" placeholder="New product name">
+      </div>
+      <div class="form-group">
+        <label>Description:</label>
+        <textarea id="updateDescription" placeholder="New product description"></textarea>
+      </div>
+      <button onclick="updateProduct()">Update Product</button>
+    </div>
+
+    <!-- Delete Product -->
+    <div class="section">
+      <h2>🗑️ Delete Product</h2>
+      <div class="form-group">
+        <label>Product ID:</label>
+        <input type="text" id="deleteId" placeholder="Enter product UUID">
+      </div>
+      <button class="danger" onclick="deleteProduct(false)">Soft Delete</button>
+      <button class="danger" onclick="deleteProduct(true)">Hard Delete</button>
+    </div>
+
+    <!-- Restore Product -->
+    <div class="section">
+      <h2>♻️ Restore Product</h2>
+      <div class="form-group">
+        <label>Product ID:</label>
+        <input type="text" id="restoreId" placeholder="Enter product UUID">
+      </div>
+      <button class="success" onclick="restoreProduct()">Restore Product</button>
+    </div>
+
+    <!-- Response -->
+    <div id="response">
+      <h3>Response:</h3>
+      <pre id="responseContent">No response yet. Try making a request!</pre>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = '/api/products';
+
+    function displayResponse(data, status) {
+      const responseContent = document.getElementById('responseContent');
+      responseContent.textContent = `Status: ${status}\n\n${JSON.stringify(data, null, 2)}`;
+    }
+
+    async function getAllProducts() {
+      try {
+        const response = await fetch(API_BASE);
+        const data = await response.json();
+        displayResponse(data, response.status);
+        
+        if (data.success) {
+          displayProductsList(data.data);
+        }
+      } catch (error) {
+        displayResponse({ error: error.message }, 'Error');
+      }
+    }
+
+    function displayProductsList(products) {
+      const productsList = document.getElementById('productsList');
+      
+      if (products.length === 0) {
+        productsList.innerHTML = '<p style="margin-top: 15px; color: #666;">No products found.</p>';
+        return;
+      }
+
+      const html = `
+        <div class="products-list">
+          ${products.map(product => `
+            <div class="product-card">
+              <span class="status-badge ${product.deletedAt ? 'deleted' : 'active'}">
+                ${product.deletedAt ? 'Deleted' : 'Active'}
+              </span>
+              <h4>${product.name}</h4>
+              <p>${product.description}</p>
+              <small>ID: ${product.id}</small>
+              <div class="product-actions">
+                <button onclick="fillGetProduct('${product.id}')">View</button>
+                <button class="secondary" onclick="fillUpdateProduct('${product.id}', '${product.name.replace(/'/g, "\\'")}', '${product.description.replace(/'/g, "\\'")}')">Edit</button>
+                <button class="danger" onclick="fillDeleteProduct('${product.id}')">Delete</button>
+                ${product.deletedAt ? `<button class="success" onclick="fillRestoreProduct('${product.id}')">Restore</button>` : ''}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+      
+      productsList.innerHTML = html;
+    }
+
+    async function getProduct() {
+      const id = document.getElementById('getProductId').value;
+      if (!id) {
+        alert('Please enter a product ID');
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_BASE}/${id}`);
+        const data = await response.json();
+        displayResponse(data, response.status);
+      } catch (error) {
+        displayResponse({ error: error.message }, 'Error');
+      }
+    }
+
+    async function createProduct() {
+      const name = document.getElementById('createName').value;
+      const description = document.getElementById('createDescription').value;
+
+      if (!name || !description) {
+        alert('Please fill in all fields');
+        return;
+      }
+
+      try {
+        const response = await fetch(API_BASE, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ name, description })
+        });
+        const data = await response.json();
+        displayResponse(data, response.status);
+        
+        if (data.success) {
+          document.getElementById('createName').value = '';
+          document.getElementById('createDescription').value = '';
+          refreshProducts();
+        }
+      } catch (error) {
+        displayResponse({ error: error.message }, 'Error');
+      }
+    }
+
+    async function updateProduct() {
+      const id = document.getElementById('updateId').value;
+      const name = document.getElementById('updateName').value;
+      const description = document.getElementById('updateDescription').value;
+
+      if (!id) {
+        alert('Please enter a product ID');
+        return;
+      }
+
+      if (!name && !description) {
+        alert('Please fill in at least one field to update');
+        return;
+      }
+
+      const body = {};
+      if (name) body.name = name;
+      if (description) body.description = description;
+
+      try {
+        const response = await fetch(`${API_BASE}/${id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(body)
+        });
+        const data = await response.json();
+        displayResponse(data, response.status);
+        
+        if (data.success) {
+          refreshProducts();
+        }
+      } catch (error) {
+        displayResponse({ error: error.message }, 'Error');
+      }
+    }
+
+    async function deleteProduct(hard = false) {
+      const id = document.getElementById('deleteId').value;
+      if (!id) {
+        alert('Please enter a product ID');
+        return;
+      }
+
+      const confirmed = confirm(`Are you sure you want to ${hard ? 'permanently' : 'soft'} delete this product?`);
+      if (!confirmed) return;
+
+      try {
+        const url = hard ? `${API_BASE}/${id}?hard=true` : `${API_BASE}/${id}`;
+        const response = await fetch(url, {
+          method: 'DELETE'
+        });
+        const data = await response.json();
+        displayResponse(data, response.status);
+        
+        if (data.success) {
+          refreshProducts();
+        }
+      } catch (error) {
+        displayResponse({ error: error.message }, 'Error');
+      }
+    }
+
+    async function restoreProduct() {
+      const id = document.getElementById('restoreId').value;
+      if (!id) {
+        alert('Please enter a product ID');
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_BASE}/${id}`, {
+          method: 'PATCH'
+        });
+        const data = await response.json();
+        displayResponse(data, response.status);
+        
+        if (data.success) {
+          refreshProducts();
+        }
+      } catch (error) {
+        displayResponse({ error: error.message }, 'Error');
+      }
+    }
+
+    function refreshProducts() {
+      getAllProducts();
+    }
+
+    // Helper functions to fill forms
+    function fillGetProduct(id) {
+      document.getElementById('getProductId').value = id;
+      document.getElementById('getProductId').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function fillUpdateProduct(id, name, description) {
+      document.getElementById('updateId').value = id;
+      document.getElementById('updateName').value = name;
+      document.getElementById('updateDescription').value = description;
+      document.getElementById('updateId').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function fillDeleteProduct(id) {
+      document.getElementById('deleteId').value = id;
+      document.getElementById('deleteId').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function fillRestoreProduct(id) {
+      document.getElementById('restoreId').value = id;
+      document.getElementById('restoreId').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    // Load products on page load
+    window.addEventListener('load', () => {
+      getAllProducts();
+    });
+  </script>
+</body>
+</html>
