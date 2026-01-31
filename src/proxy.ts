@@ -8,8 +8,19 @@ export default auth((req) => {
   const isLoggedIn = !!req.auth
 
   // Define public routes that don't require authentication
-  const publicRoutes = ["/", "/auth/signin", "/auth/register"]
-  const isPublicRoute = publicRoutes.includes(nextUrl.pathname)
+  const publicRoutes = [
+    "/",
+    "/home",
+    "/auth/signin",
+    "/auth/register",
+    "/examples",
+    "/examples/accessibility",
+    "/examples/seo",
+    "/examples/web-vitals",
+  ]
+  const isPublicRoute =
+    publicRoutes.includes(nextUrl.pathname) ||
+    nextUrl.pathname.startsWith("/examples/")
 
   // Define auth routes (signin, register)
   const authRoutes = ["/auth/signin", "/auth/register"]
